@@ -1,1 +1,1 @@
-add_two <- function(x, y) x + y + 1
+add_two <- function(x, y) x + y
