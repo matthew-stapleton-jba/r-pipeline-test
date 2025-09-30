@@ -38,7 +38,7 @@ jobs:
       - name: Restore dependencies with renv
         shell: Rscript {0}
         run: |
-          renv::restore()
+          renv::restore(dev = TRUE)
 
       - name: Check package
         shell: Rscript {0}
