@@ -1,6 +1,8 @@
-name: R-tests
+name: R-CI
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -9,17 +11,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: r-lib/actions/setup-r@v2
+      - name: Setup Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
         with:
-          r-version: '4.3.1'
+          r-version: '4.4.2'     # murest match R in renv.lock
+          use-public-rspm: true
 
-      - name: Install renv
-        run: Rscript -e 'install.packages("renv")'
+      - name: System libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev \
+            libgit2-dev libx11-dev pandoc
 
-      - name: Restore dependencies
-        run: Rscript -e 'renv::restore()'
+      - name: Bootstrap tools
+        shell: Rscript {0}
+        run: |
+          install.packages(c("renv","rcmdcheck"))
 
-      - name: Run tests
-        run: Rscript -e 'testthat::test_dir("tests")'
+      - name: Restore dependencies with renv
+        shell: Rscript {0}
+        run: |
+          renv::install(dependencies = c("Imports", "Suggests"), prompt = FALSE)
+
+      - name: Check package
+        shell: Rscript {0}
+        run: |
+          rcmdcheck::rcmdcheck(args = c("--no-manual","--as-cran"), error_on = "error")
