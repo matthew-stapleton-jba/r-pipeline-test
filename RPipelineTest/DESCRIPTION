@@ -15,9 +15,7 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Suggests: 
-    pkgdown,
-    roxygen2,
-    testthat (>= 3.0.0)
+    testthat (>= 3.2.3),
+    usethis,
+    devtools
 Config/testthat/edition: 3
-RoxygenNote: 7.3.3
-URL: https://matthew-stapleton-jba.github.io/r-pipeline-test/
